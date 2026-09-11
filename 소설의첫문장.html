@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>원곡고 학림도서관 - 첫 문장 보고 책 제목 맞히기</title>
+  <style>
+    :root {
+      --bg-color: #fff0f3;
+      --card-bg: #ffffff;
+      --primary: #ff8fa3;
+      --primary-hover: #ff758f;
+      --accent: #ff4d6d;
+      --text: #590d22;
+      --gray: #e9ecef;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(255, 143, 163, 0.2);
+      text-align: center;
+    }
+
+    .school-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 5px;
+      letter-spacing: -0.5px;
+    }
+
+    .header {
+      margin-bottom: 25px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--gray);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #ffe5ec;
+      color: var(--accent);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .user-tag {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    /* 글자수/띄어쓰기 힌트 원형 박스 */
+    .length-hint {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .char-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      background-color: #fff0f3;
+      display: inline-block;
+    }
+
+    .space-gap {
+      width: 14px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffccd5;
+      font-size: 10px;
+    }
+
+    .quote-box {
+      background: #fff5f6;
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      text-align: left;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #333;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #ffccd5;
+      border-radius: 10px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+
+    .msg {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      min-height: 20px;
+      text-align: center;
+    }
+
+    .msg.error { color: #d90429; }
+    .msg.success { color: #2b9348; }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      flex: 2;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-prev {
+      background: var(--gray);
+      color: #555;
+      flex: 1;
+    }
+
+    .btn-prev:hover {
+      background: #dee2e6;
+    }
+
+    .btn-restart {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- 1. 시작 화면 (원곡고등학교 학림도서관) -->
+  <div id="start-screen">
+    <div class="school-title">원곡고등학교 학림도서관</div>
+    <h2 style="color: var(--text); margin-bottom: 8px; font-size: 1.4rem;">📖 첫 문장 보고 책 제목 맞히기</h2>
+    <p style="font-size: 0.92rem; color: #777; margin-bottom: 25px;">문제를 풀기 전 본인의 학번과 이름을 입력해 주세요.</p>
+    
+    <div class="input-group">
+      <label for="student-id">학번</label>
+      <input type="text" id="student-id" placeholder="예: 11313">
+    </div>
+
+    <div class="input-group">
+      <label for="student-name">이름</label>
+      <input type="text" id="student-name" placeholder="예: 김원곡">
+      <div id="start-msg" class="msg"></div>
+    </div>
+
+    <button class="btn-submit" style="width: 100%;" onclick="startQuiz()">테스트 시작하기</button>
+  </div>
+
+  <!-- 2. 퀴즈 진행 화면 -->
+  <div id="quiz-screen" class="hidden">
+    <div class="header">
+      <div class="progress-bar">
+        <div id="progress" class="progress-fill"></div>
+      </div>
+      <div class="school-title" style="font-size: 0.95rem;">원곡고등학교 학림도서관</div>
+      <div id="user-info-tag" class="user-tag"></div>
+      <span id="quiz-step" class="status-badge">난이도 [하] - 1 / 6</span>
+    </div>
+
+    <!-- 책제목 글자수 및 띄어쓰기 힌트 -->
+    <div id="length-hint" class="length-hint"></div>
+
+    <!-- 첫 문장 제시 영역 -->
+    <div class="quote-box" id="quote-text"></div>
+
+    <!-- 답안 입력 영역 -->
+    <div class="input-group">
+      <input type="text" id="answer-input" placeholder="책 제목을 입력하세요" autocomplete="off">
+      <div id="feedback-msg" class="msg"></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-prev" id="prev-btn" onclick="goPrev()">이전 문제</button>
+      <button class="btn-submit" onclick="submitAnswer()">정답 확인</button>
+    </div>
+  </div>
+
+  <!-- 3. 결과 화면 -->
+  <div id="result-screen" class="hidden">
+    <div class="school-title">원곡고등학교 학림도서관</div>
+    <h2 style="margin-bottom: 12px; color: var(--accent);">퀴즈 완료! 🎉</h2>
+    <p id="result-text" style="margin-bottom: 20px; line-height: 1.6; text-align: left; background: #fff5f6; padding: 15px; border-radius: 10px;"></p>
+    <div id="sheet-status" class="msg" style="margin-bottom: 15px;"></div>
+    <button class="btn-restart" onclick="resetToStart()">처음으로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+  // 책 데이터 목록
+  const database = [
+    { id: 1, quote: "오늘 엄마가 죽었다. 아니, 어쩌면 어제.", title: "이방인", author: "알베르 카뮈", level: "하" },
+    { id: 2, quote: "국경의 긴 터널을 빠져나오자, 눈의 고장이었다. 밤의 밑바닥이 하얘졌다.", title: "설국", author: "가와바타 야스나리", level: "하" },
+    { id: 3, quote: "나를 이스마엘이라 부르라.", title: "모비딕", author: "허먼 멜빌", level: "하" },
+    { id: 4, quote: "버려진 섬마다 꽃이 피었다.", title: "칼의 노래", author: "김훈", level: "하" },
+    { id: 5, quote: "박제가 되어버린 천재를 아시오?", title: "날개", author: "이상", level: "하" },
+    { id: 6, quote: "나는 고양이다. 이름은 아직 없다.", title: "나는 고양이로소이다", author: "나쓰메 소세키", level: "하" },
+    { id: 7, quote: "아버지가 죽었다. 전봇대에 머리를 박고", title: "아버지의 해방일지", author: "정지아", level: "중" },
+    { id: 8, quote: "엄마를 잃어버린 지 일주일 째다.", title: "엄마를 부탁해", author: "신경숙", level: "하" },
+    { id: 9, quote: "아내가 채식을 시작하기 전까지 나는 그녀가 특별한 사람이라고 생각한 적이 없었다.", title: "채식주의자", author: "한강", level: "중" },
+    { id: 10, quote: "바다는, 크레파스보다 진한, 푸르고 육중한 비늘을 무겁게 뒤채면서, 숨을 쉰다.", title: "광장", author: "최인훈", level: "중" },
+    { id: 11, quote: "그는 멕시코 만류에서 조각배를 타고 혼자 고기잡이를 하는 늙은이였다. 고기를 한 마리도 낚지 못한 날이 84일이나 계속되었다.", title: "노인과 바다", author: "어니스트 헤밍웨이", level: "중" },
+    { id: 12, quote: "최고의 시절이자 최악의 시절, 지혜의 시대이자 어리석음의 시대였다. 믿음의 세기이자 의심의 세기였으며 빛의 계절이자 어둠의 계절이었다.", title: "두 도시 이야기", author: "찰스 디킨스", level: "중" },
+    { id: 13, quote: "역사는 우리를 저버렸지만, 그래도 상관없다.", title: "파친코", author: "이민진", level: "중" },
+    { id: 14, quote: "화창하지만 쌀쌀한 4월의 어느 날이었고, 시계는 13시를 치고 있었다.", title: "1984", author: "조지 오웰", level: "중" },
+    { id: 15, quote: "그레고르 잠자는 어느 날 아침 불안한 꿈에서 깨어났을 때, 자신이 흉측한 벌레로 변해 침대에 누워 있는 것을 발견했다.", title: "변신", author: "프란츠 카프카", level: "중" }
+  ];
+
+  // 전달해주신 Google Apps Script 웹 앱 배포 URL 연동
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzu1tRaedjczx9gt5jRH8I3G3Aac2UAnaRDhaAM91vSicfvniy74FakqmAt1emNdhVg/exec"; 
+
+  let studentId = "";
+  let studentName = "";
+  let quizList = [];
+  let currentIndex = 0;
+  let userAnswers = [];
+
+  function getRandomItems(arr, count) {
+    const shuffled = [...arr].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+
+  // 퀴즈 시작
+  function startQuiz() {
+    const idInput = document.getElementById("student-id").value.trim();
+    const nameInput = document.getElementById("student-name").value.trim();
+    const startMsg = document.getElementById("start-msg");
+
+    if (!idInput || !nameInput) {
+      startMsg.innerText = "학번과 이름을 모두 입력해 주세요.";
+      startMsg.className = "msg error";
+      return;
+    }
+
+    studentId = idInput;
+    studentName = nameInput;
+
+    const lowLevel = database.filter(item => item.level === "하");
+    const midLevel = database.filter(item => item.level === "중");
+
+    // 난이도 하 3개 + 중 3개 무작위 추출 (총 6문제)
+    quizList = [...getRandomItems(lowLevel, 3), ...getRandomItems(midLevel, 3)];
+    currentIndex = 0;
+    userAnswers = new Array(6).fill("");
+
+    document.getElementById("start-screen").classList.add("hidden");
+    document.getElementById("quiz-screen").classList.remove("hidden");
+    document.getElementById("user-info-tag").innerText = `응시자: ${studentId} ${studentName}`;
+
+    renderQuestion();
+  }
+
+  // 문제 렌더링
+  function renderQuestion() {
+    const q = quizList[currentIndex];
+    const progressPercent = ((currentIndex + 1) / 6) * 100;
+    
+    document.getElementById("progress").style.width = `${progressPercent}%`;
+    document.getElementById("quiz-step").innerText = `난이도 [${q.level}] - ${currentIndex + 1} / 6`;
+    document.getElementById("quote-text").innerText = `"${q.quote}"`;
+
+    // 글자 수 및 띄어쓰기 동그라미 렌더링
+    const hintContainer = document.getElementById("length-hint");
+    hintContainer.innerHTML = "";
+    
+    for (let char of q.title) {
+      if (char === " ") {
+        const space = document.createElement("span");
+        space.className = "space-gap";
+        space.innerText = "␣";
+        hintContainer.appendChild(space);
+      } else {
+        const circle = document.createElement("span");
+        circle.className = "char-circle";
+        hintContainer.appendChild(circle);
+      }
+    }
+
+    const input = document.getElementById("answer-input");
+    input.value = userAnswers[currentIndex] || "";
+    input.focus();
+    
+    document.getElementById("feedback-msg").innerText = "";
+    document.getElementById("feedback-msg").className = "msg";
+    document.getElementById("prev-btn").disabled = (currentIndex === 0);
+  }
+
+  function checkMatch(input, target) {
+    return input.replace(/\s+/g, '').toLowerCase() === target.replace(/\s+/g, '').toLowerCase();
+  }
+
+  // 정답 제출
+  function submitAnswer() {
+    const input = document.getElementById("answer-input").value.trim();
+    const feedback = document.getElementById("feedback-msg");
+    const currentQ = quizList[currentIndex];
+
+    if (!input) {
+      feedback.innerText = "답을 입력해 주세요.";
+      feedback.className = "msg error";
+      return;
+    }
+
+    userAnswers[currentIndex] = input;
+
+    if (checkMatch(input, currentQ.title)) {
+      feedback.innerText = "정답입니다! 다음 문제로 넘어갑니다.";
+      feedback.className = "msg success";
+      
+      setTimeout(() => {
+        if (currentIndex < 5) {
+          currentIndex++;
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }, 600);
+    } else {
+      feedback.innerText = "틀렸습니다. 다시 고민해 보세요!";
+      feedback.className = "msg error";
+    }
+  }
+
+  // 이전 문제로 이동
+  function goPrev() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  }
+
+  // Enter 키 입력 지원
+  document.getElementById("answer-input").addEventListener("keyup", function(e) {
+    if (e.key === "Enter") {
+      submitAnswer();
+    }
+  });
+
+  // 결과 화면
+  function showResult() {
+    document.getElementById("quiz-screen").classList.add("hidden");
+    document.getElementById("result-screen").classList.remove("hidden");
+
+    let summaryHtml = `<b>${studentId} ${studentName}</b> 님, 6문제를 모두 맞히셨습니다!<br><br>`;
+    quizList.forEach((q, idx) => {
+      summaryHtml += `${idx + 1}. [${q.title}] - ${q.author || '저자 미상'}<br>`;
+    });
+    document.getElementById("result-text").innerHTML = summaryHtml;
+
+    saveToGoogleDrive();
+  }
+
+  // Google Apps Script(스프레드시트) 전송
+  function saveToGoogleDrive() {
+    const statusBox = document.getElementById("sheet-status");
+    statusBox.innerText = "구글 드라이브 스프레드시트에 저장하는 중...";
+    
+    const payload = {
+      studentId: studentId,
+      studentName: studentName,
+      timestamp: new Date().toLocaleString(),
+      solvedQuestions: quizList.map((q, i) => `${q.title}(${q.level})`).join(", ")
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      statusBox.innerText = "✅ 스프레드시트에 결과가 안전하게 저장되었습니다.";
+      statusBox.className = "msg success";
+    })
+    .catch(err => {
+      statusBox.innerText = "❌ 저장 중 통신 오류가 발생했습니다.";
+      statusBox.className = "msg error";
+    });
+  }
+
+  // 처음 화면으로 리셋
+  function resetToStart() {
+    document.getElementById("student-id").value = "";
+    document.getElementById("student-name").value = "";
+    document.getElementById("start-msg").innerText = "";
+    document.getElementById("result-screen").classList.add("hidden");
+    document.getElementById("start-screen").classList.remove("hidden");
+  }
+</script>
+</body>
+</html>
